@@ -14,7 +14,6 @@ interface XkcdService {
     suspend fun getFirstComic(): Xkcd
 }
 
-
 object RetrofitClient {
     private const val BASE_URL = "https://xkcd.com/"
 

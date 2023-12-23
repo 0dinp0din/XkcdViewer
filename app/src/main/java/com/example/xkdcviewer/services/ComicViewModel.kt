@@ -1,0 +1,49 @@
+package com.example.xkdcviewer.services
+
+import android.content.Context
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.xkdcviewer.data.ComicRepository
+import com.example.xkdcviewer.models.Xkcd
+import kotlinx.coroutines.launch
+
+class ComicViewModel(context: Context) : ViewModel() {
+
+    private val comicRepository = ComicRepository(context)
+
+    val comics: MutableState<List<Xkcd>> = mutableStateOf(emptyList())
+    val favouriteNums: MutableState<List<Int>> = mutableStateOf(emptyList())
+
+    init {
+        refreshComics()
+    }
+
+    fun saveComic(comic: Xkcd) {
+        viewModelScope.launch {
+            comicRepository.insertComic(comic)
+
+            refreshComics()
+        }
+    }
+
+    private fun refreshComics() {
+        viewModelScope.launch {
+            comics.value = comicRepository.getAllComics()
+            favouriteNums.value = comicRepository.getFavouriteNums()
+        }
+    }
+
+    suspend fun getFavouriteNums(): List<Int> {
+        return comicRepository.getFavouriteNums()
+    }
+
+    fun deleteComic(num: Int) {
+        viewModelScope.launch {
+            comicRepository.deleteComic(num)
+
+            refreshComics()
+        }
+    }
+}

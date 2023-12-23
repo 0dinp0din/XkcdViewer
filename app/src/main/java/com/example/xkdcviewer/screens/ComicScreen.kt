@@ -18,12 +18,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.xkdcviewer.components.ComicCard
+import com.example.xkdcviewer.components.FavoriteButton
 import com.example.xkdcviewer.models.Xkcd
+import com.example.xkdcviewer.services.ComicViewModel
 import com.example.xkdcviewer.services.RetrofitClient
 import kotlinx.coroutines.launch
 
 @Composable
-fun ComicScreen() {
+fun ComicScreen(comicVm: ComicViewModel) {
     var xkcdComic by remember { mutableStateOf<Xkcd?>(null) }
     val comicApi = RetrofitClient.xkcdService
     val coroutineScope = rememberCoroutineScope()
@@ -31,7 +33,7 @@ fun ComicScreen() {
 
     LaunchedEffect(key1 = Unit) {
         xkcdComic = comicApi.getFirstComic()
-        lastComicIndex = xkcdComic!!.num ?: 0
+        lastComicIndex = xkcdComic!!.num
     }
 
     Column {
@@ -62,6 +64,16 @@ fun ComicScreen() {
                 }
             }
         }
+
+        FavoriteButton(isFavorite = (xkcdComic?.num in comicVm.favouriteNums.value), onClick = {
+            xkcdComic?.num?.let { comicNum ->
+                if (comicNum in comicVm.favouriteNums.value) {
+                    comicVm.deleteComic(comicNum)
+                } else {
+                    comicVm.saveComic(xkcdComic!!)
+                }
+            }
+        })
 
         xkcdComic?.let { ComicCard(comic = it) }
     }
