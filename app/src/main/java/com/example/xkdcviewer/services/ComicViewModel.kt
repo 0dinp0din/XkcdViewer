@@ -13,7 +13,6 @@ class ComicViewModel(context: Context) : ViewModel() {
 
     private val comicRepository = ComicRepository(context)
 
-    val comics: MutableState<List<Xkcd>> = mutableStateOf(emptyList())
     val favouriteNums: MutableState<List<Int>> = mutableStateOf(emptyList())
 
     init {
@@ -30,13 +29,8 @@ class ComicViewModel(context: Context) : ViewModel() {
 
     private fun refreshComics() {
         viewModelScope.launch {
-            comics.value = comicRepository.getAllComics()
             favouriteNums.value = comicRepository.getFavouriteNums()
         }
-    }
-
-    suspend fun getFavouriteNums(): List<Int> {
-        return comicRepository.getFavouriteNums()
     }
 
     fun deleteComic(num: Int) {

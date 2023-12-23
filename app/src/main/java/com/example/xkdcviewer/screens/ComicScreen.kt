@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.xkdcviewer.components.ComicCard
+import com.example.xkdcviewer.components.CopyButton
 import com.example.xkdcviewer.components.FavoriteButton
 import com.example.xkdcviewer.models.Xkcd
 import com.example.xkdcviewer.services.ComicViewModel
@@ -65,15 +66,19 @@ fun ComicScreen(comicVm: ComicViewModel) {
             }
         }
 
-        FavoriteButton(isFavorite = (xkcdComic?.num in comicVm.favouriteNums.value), onClick = {
-            xkcdComic?.num?.let { comicNum ->
-                if (comicNum in comicVm.favouriteNums.value) {
-                    comicVm.deleteComic(comicNum)
-                } else {
-                    comicVm.saveComic(xkcdComic!!)
+        Row {
+            FavoriteButton(isFavorite = (xkcdComic?.num in comicVm.favouriteNums.value), onClick = {
+                xkcdComic?.num?.let { comicNum ->
+                    if (comicNum in comicVm.favouriteNums.value) {
+                        comicVm.deleteComic(comicNum)
+                    } else {
+                        comicVm.saveComic(xkcdComic!!)
+                    }
                 }
-            }
-        })
+            })
+
+            CopyButton(num = xkcdComic?.num.toString())
+        }
 
         xkcdComic?.let { ComicCard(comic = it) }
     }
