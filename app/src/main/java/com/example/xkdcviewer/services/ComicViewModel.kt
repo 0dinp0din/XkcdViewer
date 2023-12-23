@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 class ComicViewModel(context: Context) : ViewModel() {
 
     private val comicRepository = ComicRepository(context)
+    private val explanationApi = RetrofitClient.xkcdExplainService
 
     val favouriteNums: MutableState<List<Int>> = mutableStateOf(emptyList())
 
@@ -39,5 +40,17 @@ class ComicViewModel(context: Context) : ViewModel() {
 
             refreshComics()
         }
+    }
+
+    suspend fun getExplanation(num: Int, title: String): String {
+        val comic = explanationApi.getComicExplanation(page = "$num:_$title").parse.wikitext.wikitextContent
+
+        val explanationStartIndex = comic.indexOf("==Explanation==") + "==Explanation==".length
+        val transcriptStartIndex = comic.indexOf("==Transcript==")
+
+        if (explanationStartIndex in 0..<transcriptStartIndex) {
+            return comic.substring(explanationStartIndex, transcriptStartIndex).trim()
+        }
+        return "No explanation available"
     }
 }

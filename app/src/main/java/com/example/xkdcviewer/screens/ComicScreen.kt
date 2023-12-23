@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.xkdcviewer.components.ComicCard
 import com.example.xkdcviewer.components.CopyButton
+import com.example.xkdcviewer.components.ExplainButton
 import com.example.xkdcviewer.components.FavoriteButton
+import com.example.xkdcviewer.components.InfoAlertDialog
 import com.example.xkdcviewer.models.Xkcd
 import com.example.xkdcviewer.services.ComicViewModel
 import com.example.xkdcviewer.services.RetrofitClient
@@ -31,10 +33,16 @@ fun ComicScreen(comicVm: ComicViewModel) {
     val comicApi = RetrofitClient.xkcdService
     val coroutineScope = rememberCoroutineScope()
     var lastComicIndex by remember { mutableIntStateOf(0) }
+    var showAlert by remember { mutableStateOf(false) }
+    var explanation by remember { mutableStateOf("") }
 
     LaunchedEffect(key1 = Unit) {
         xkcdComic = comicApi.getFirstComic()
         lastComicIndex = xkcdComic!!.num
+
+        if (xkcdComic != null) {
+            explanation = comicVm.getExplanation(xkcdComic!!.num, xkcdComic!!.title)
+        }
     }
 
     Column {
@@ -47,6 +55,9 @@ fun ComicScreen(comicVm: ComicViewModel) {
                 Button(onClick = {
                     coroutineScope.launch {
                         xkcdComic = xkcdComic?.let { comicApi.getComicById(it.num + 1) }
+                        if (xkcdComic != null) {
+                            explanation = comicVm.getExplanation(xkcdComic!!.num, xkcdComic!!.title)
+                        }
                     }
                 }) {
                     Text(text = "Prev")
@@ -59,6 +70,9 @@ fun ComicScreen(comicVm: ComicViewModel) {
                 Button(onClick = {
                     coroutineScope.launch {
                         xkcdComic = xkcdComic?.let { comicApi.getComicById(it.num - 1) }
+                        if (xkcdComic != null) {
+                            explanation = comicVm.getExplanation(xkcdComic!!.num, xkcdComic!!.title)
+                        }
                     }
                 }) {
                     Text(text = "Next")
@@ -78,6 +92,12 @@ fun ComicScreen(comicVm: ComicViewModel) {
             })
 
             CopyButton(num = xkcdComic?.num.toString())
+
+            ExplainButton(showAlert = { showAlert = true })
+
+            if (showAlert) {
+                InfoAlertDialog(explanation, onDismiss = { showAlert = false })
+            }
         }
 
         xkcdComic?.let { ComicCard(comic = it) }

@@ -6,7 +6,7 @@ import com.example.xkdcviewer.models.Xkcd
 
 class ComicRepository(context: Context) {
 
-    val database = Room.databaseBuilder(
+    private val database = Room.databaseBuilder(
         context = context,
         ComicDatabase::class.java,
         "comic-database",
