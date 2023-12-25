@@ -1,6 +1,5 @@
 package com.example.xkdcviewer.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,7 +14,6 @@ fun InfoAlertDialog(explanation: String, onDismiss: () -> Unit) {
     AlertDialog(
         { onDismiss() },
         {
-            Log.i("testtest", explanation)
             Button(
                 onClick = { onDismiss() },
                 content = { Text("Close") },

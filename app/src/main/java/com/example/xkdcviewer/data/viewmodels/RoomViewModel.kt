@@ -1,4 +1,4 @@
-package com.example.xkdcviewer.services
+package com.example.xkdcviewer.data.viewmodels
 
 import android.content.Context
 import androidx.compose.runtime.MutableState
@@ -9,13 +9,11 @@ import com.example.xkdcviewer.data.ComicRepository
 import com.example.xkdcviewer.models.Xkcd
 import kotlinx.coroutines.launch
 
-class ComicViewModel(context: Context) : ViewModel() {
+class RoomViewModel(context: Context) : ViewModel() {
 
     private val comicRepository = ComicRepository(context)
-    private val explanationApi = RetrofitClient.xkcdExplainService
 
     val favouriteNums: MutableState<List<Int>> = mutableStateOf(emptyList())
-
     init {
         refreshComics()
     }
@@ -40,17 +38,5 @@ class ComicViewModel(context: Context) : ViewModel() {
 
             refreshComics()
         }
-    }
-
-    suspend fun getExplanation(num: Int, title: String): String {
-        val comic = explanationApi.getComicExplanation(page = "$num:_$title").parse.wikitext.wikitextContent
-
-        val explanationStartIndex = comic.indexOf("==Explanation==") + "==Explanation==".length
-        val transcriptStartIndex = comic.indexOf("==Transcript==")
-
-        if (explanationStartIndex in 0..<transcriptStartIndex) {
-            return comic.substring(explanationStartIndex, transcriptStartIndex).trim()
-        }
-        return "No explanation available"
     }
 }

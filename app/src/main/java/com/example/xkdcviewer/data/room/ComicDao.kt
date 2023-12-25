@@ -1,4 +1,4 @@
-package com.example.xkdcviewer.data
+package com.example.xkdcviewer.data.room
 
 import androidx.room.Dao
 import androidx.room.Insert

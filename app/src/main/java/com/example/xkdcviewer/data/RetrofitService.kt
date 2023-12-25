@@ -1,4 +1,4 @@
-package com.example.xkdcviewer.services
+package com.example.xkdcviewer.data
 
 import com.example.xkdcviewer.models.ComicExplanation
 import com.example.xkdcviewer.models.Xkcd

@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,28 +20,15 @@ import com.example.xkdcviewer.components.CopyButton
 import com.example.xkdcviewer.components.ExplainButton
 import com.example.xkdcviewer.components.FavoriteButton
 import com.example.xkdcviewer.components.InfoAlertDialog
-import com.example.xkdcviewer.models.Xkcd
-import com.example.xkdcviewer.services.ComicViewModel
-import com.example.xkdcviewer.services.RetrofitClient
-import kotlinx.coroutines.launch
+import com.example.xkdcviewer.data.viewmodels.RetrofitViewModel
+import com.example.xkdcviewer.data.viewmodels.RoomViewModel
 
 @Composable
-fun ComicScreen(comicVm: ComicViewModel) {
-    var xkcdComic by remember { mutableStateOf<Xkcd?>(null) }
-    val comicApi = RetrofitClient.xkcdService
-    val coroutineScope = rememberCoroutineScope()
-    var lastComicIndex by remember { mutableIntStateOf(0) }
+fun ComicScreen(roomVm: RoomViewModel, retrofitVm: RetrofitViewModel) {
     var showAlert by remember { mutableStateOf(false) }
-    var explanation by remember { mutableStateOf("") }
-
-    LaunchedEffect(key1 = Unit) {
-        xkcdComic = comicApi.getFirstComic()
-        lastComicIndex = xkcdComic!!.num
-
-        if (xkcdComic != null) {
-            explanation = comicVm.getExplanation(xkcdComic!!.num, xkcdComic!!.title)
-        }
-    }
+    val comic by retrofitVm.comic.collectAsState()
+    val explanation by retrofitVm.explanation.collectAsState()
+    val lastComicIndex by retrofitVm.lastComicIndex.collectAsState()
 
     Column {
         Row(
@@ -51,47 +36,33 @@ fun ComicScreen(comicVm: ComicViewModel) {
                 .fillMaxWidth()
                 .padding(8.dp),
         ) {
-            if ((xkcdComic?.num ?: 0) < lastComicIndex) {
-                Button(onClick = {
-                    coroutineScope.launch {
-                        xkcdComic = xkcdComic?.let { comicApi.getComicById(it.num + 1) }
-                        if (xkcdComic != null) {
-                            explanation = comicVm.getExplanation(xkcdComic!!.num, xkcdComic!!.title)
-                        }
-                    }
-                }) {
+            if ((comic?.num ?: 0) < lastComicIndex) {
+                Button(onClick = { retrofitVm.getComic(comic!!.num + 1) }) {
                     Text(text = "Prev")
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            if ((xkcdComic?.num ?: 0) > 0) {
-                Button(onClick = {
-                    coroutineScope.launch {
-                        xkcdComic = xkcdComic?.let { comicApi.getComicById(it.num - 1) }
-                        if (xkcdComic != null) {
-                            explanation = comicVm.getExplanation(xkcdComic!!.num, xkcdComic!!.title)
-                        }
-                    }
-                }) {
+            if ((comic?.num ?: 0) > 0) {
+                Button(onClick = { retrofitVm.getComic(comic!!.num - 1) }) {
                     Text(text = "Next")
                 }
             }
         }
 
         Row {
-            FavoriteButton(isFavorite = (xkcdComic?.num in comicVm.favouriteNums.value), onClick = {
-                xkcdComic?.num?.let { comicNum ->
-                    if (comicNum in comicVm.favouriteNums.value) {
-                        comicVm.deleteComic(comicNum)
+            FavoriteButton(isFavorite = (comic?.num in roomVm.favouriteNums.value), onClick = {
+                comic?.num?.let { comicNum ->
+                    if (comicNum in roomVm.favouriteNums.value) {
+                        roomVm.deleteComic(comicNum)
                     } else {
-                        comicVm.saveComic(xkcdComic!!)
+                        roomVm.saveComic(comic!!)
                     }
                 }
             })
 
-            CopyButton(num = xkcdComic?.num.toString())
+            CopyButton(num = comic?.num.toString())
 
             ExplainButton(showAlert = { showAlert = true })
 
@@ -100,6 +71,6 @@ fun ComicScreen(comicVm: ComicViewModel) {
             }
         }
 
-        xkcdComic?.let { ComicCard(comic = it) }
+        comic?.let { ComicCard(comic = it) }
     }
 }

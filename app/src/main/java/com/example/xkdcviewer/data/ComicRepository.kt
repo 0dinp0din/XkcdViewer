@@ -2,6 +2,7 @@ package com.example.xkdcviewer.data
 
 import android.content.Context
 import androidx.room.Room
+import com.example.xkdcviewer.data.room.ComicDatabase
 import com.example.xkdcviewer.models.Xkcd
 
 class ComicRepository(context: Context) {

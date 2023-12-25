@@ -1,4 +1,4 @@
-package com.example.xkdcviewer.data
+package com.example.xkdcviewer.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

@@ -9,8 +9,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.xkdcviewer.data.viewmodels.RetrofitViewModel
+import com.example.xkdcviewer.data.viewmodels.RoomViewModel
 import com.example.xkdcviewer.screens.ComicScreen
-import com.example.xkdcviewer.services.ComicViewModel
 import com.example.xkdcviewer.ui.theme.XKDCViewerTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,9 +23,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    val comicViewModel = ComicViewModel(applicationContext)
+                    val roomViewModel = RoomViewModel(applicationContext)
+                    val retrofitViewModel = RetrofitViewModel()
 
-                    ComicScreen(comicViewModel)
+                    ComicScreen(roomViewModel, retrofitViewModel)
                 }
             }
         }
