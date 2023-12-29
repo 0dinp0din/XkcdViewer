@@ -10,7 +10,9 @@ import retrofit2.http.Query
 
 interface XkcdService {
     @GET("{comicId}/info.0.json")
-    suspend fun getComicById(@Path("comicId") comicId: Int): Xkcd
+    suspend fun getComicById(
+        @Path("comicId") comicId: Int,
+    ): Xkcd
 
     @GET("info.0.json")
     suspend fun getFirstComic(): Xkcd
@@ -26,8 +28,8 @@ interface XkcdExplainService {
         @Query("format") format: String = "json",
     ): ComicExplanation
 }
-object RetrofitClient {
 
+object RetrofitClient {
     val xkcdService: XkcdService by lazy {
         Retrofit.Builder()
             .baseUrl("https://xkcd.com/")

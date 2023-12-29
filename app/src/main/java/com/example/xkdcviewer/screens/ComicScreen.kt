@@ -24,7 +24,10 @@ import com.example.xkdcviewer.data.viewmodels.RetrofitViewModel
 import com.example.xkdcviewer.data.viewmodels.RoomViewModel
 
 @Composable
-fun ComicScreen(roomVm: RoomViewModel, retrofitVm: RetrofitViewModel) {
+fun ComicScreen(
+    roomVm: RoomViewModel,
+    retrofitVm: RetrofitViewModel,
+) {
     var showAlert by remember { mutableStateOf(false) }
     val comic by retrofitVm.comic.collectAsState()
     val explanation by retrofitVm.explanation.collectAsState()
@@ -32,9 +35,10 @@ fun ComicScreen(roomVm: RoomViewModel, retrofitVm: RetrofitViewModel) {
 
     Column {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
         ) {
             if ((comic?.num ?: 0) < lastComicIndex) {
                 Button(onClick = { retrofitVm.getComic(comic!!.num + 1) }) {

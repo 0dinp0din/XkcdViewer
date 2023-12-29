@@ -19,25 +19,47 @@ class RetrofitViewModel : ViewModel() {
 
     private val _lastComicIndex = MutableStateFlow(0)
     val lastComicIndex = _lastComicIndex.asStateFlow()
+
+    private val _hasConnection = MutableStateFlow(true)
+    val hasConnection = _hasConnection.asStateFlow()
+
     init {
+        getFirstComic()
+    }
+
+    fun getFirstComic() {
         viewModelScope.launch {
-            _comic.value = retrofit.xkcdService.getFirstComic()
-            getExplanation()
-            _lastComicIndex.value = comic.value!!.num
+            try {
+                _comic.value = retrofit.xkcdService.getFirstComic()
+                getExplanation()
+                _lastComicIndex.value = comic.value?.num ?: 0
+
+                _hasConnection.value = true
+            } catch (e: Exception) {
+                _hasConnection.value = false
+            }
         }
     }
 
     fun getComic(num: Int) {
         viewModelScope.launch {
-            _comic.value = retrofit.xkcdService.getComicById(num)
-            getExplanation()
+            try {
+                _comic.value = retrofit.xkcdService.getComicById(num)
+                getExplanation()
+
+                _hasConnection.value = true
+            } catch (e: Exception) {
+                _hasConnection.value = false
+            }
         }
     }
+
     private fun getExplanation() {
         viewModelScope.launch {
-            val rawExplanation = retrofit.xkcdExplainService.getComicExplanation(
-                page = "${comic.value!!.num}:_${comic.value!!.title}",
-            ).parse.wikitext.wikitextContent
+            val rawExplanation =
+                retrofit.xkcdExplainService.getComicExplanation(
+                    page = "${comic.value?.num}:_${comic.value?.title}",
+                ).parse.wikitext.wikitextContent
 
             val explanationStartIndex = rawExplanation.indexOf("==Explanation==") + "==Explanation==".length
             val transcriptStartIndex = rawExplanation.indexOf("==Transcript==")
