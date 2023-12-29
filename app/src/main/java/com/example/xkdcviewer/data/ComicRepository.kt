@@ -3,22 +3,25 @@ package com.example.xkdcviewer.data
 import android.content.Context
 import androidx.room.Room
 import com.example.xkdcviewer.data.room.ComicDatabase
-import com.example.xkdcviewer.models.Xkcd
+import com.example.xkdcviewer.models.OfflineXkcd
 
 class ComicRepository(context: Context) {
+    private val database =
+        Room.databaseBuilder(
+            context = context,
+            ComicDatabase::class.java,
+            "comic-database",
+        ).build()
 
-    private val database = Room.databaseBuilder(
-        context = context,
-        ComicDatabase::class.java,
-        "comic-database",
-    ).build()
-    suspend fun insertComic(comic: Xkcd) {
+    suspend fun insertComic(comic: OfflineXkcd) {
         database.comicDao().insert(comic)
     }
-    suspend fun getComicById(num: Int): Xkcd? {
+
+    suspend fun getComicById(num: Int): OfflineXkcd? {
         return database.comicDao().getComic(num)
     }
-    suspend fun getAllComics(): List<Xkcd> {
+
+    suspend fun getAllComics(): List<OfflineXkcd> {
         return database.comicDao().getAllComics()
     }
 

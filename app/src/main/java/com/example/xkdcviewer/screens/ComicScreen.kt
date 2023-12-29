@@ -1,5 +1,6 @@
 package com.example.xkdcviewer.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import com.example.xkdcviewer.data.viewmodels.RoomViewModel
 fun ComicScreen(
     roomVm: RoomViewModel,
     retrofitVm: RetrofitViewModel,
+    context: Context,
 ) {
     var showAlert by remember { mutableStateOf(false) }
     val comic by retrofitVm.comic.collectAsState()
@@ -61,7 +63,7 @@ fun ComicScreen(
                     if (comicNum in roomVm.favouriteNums.value) {
                         roomVm.deleteComic(comicNum)
                     } else {
-                        roomVm.saveComic(comic!!)
+                        roomVm.saveComic(comic!!, context, explanation)
                     }
                 }
             })
@@ -74,7 +76,6 @@ fun ComicScreen(
                 InfoAlertDialog(explanation, onDismiss = { showAlert = false })
             }
         }
-
         comic?.let { ComicCard(comic = it) }
     }
 }

@@ -4,18 +4,18 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.xkdcviewer.models.Xkcd
+import com.example.xkdcviewer.models.OfflineXkcd
 
 @Dao
 interface ComicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(comic: Xkcd)
+    suspend fun insert(comic: OfflineXkcd)
 
     @Query("SELECT * FROM comics WHERE num = :comicNum")
-    suspend fun getComic(comicNum: Int): Xkcd?
+    suspend fun getComic(comicNum: Int): OfflineXkcd?
 
     @Query("SELECT * FROM comics")
-    suspend fun getAllComics(): List<Xkcd>
+    suspend fun getAllComics(): List<OfflineXkcd>
 
     @Query("SELECT num FROM comics")
     suspend fun getFavourites(): List<Int>

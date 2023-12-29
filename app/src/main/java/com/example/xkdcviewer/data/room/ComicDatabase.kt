@@ -2,9 +2,11 @@ package com.example.xkdcviewer.data.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.xkdcviewer.models.Xkcd
+import androidx.room.TypeConverters
+import com.example.xkdcviewer.models.OfflineXkcd
 
-@Database(entities = [Xkcd::class], version = 1, exportSchema = false)
+@Database(entities = [OfflineXkcd::class], version = 1, exportSchema = false)
+@TypeConverters(BitmapTypeConverter::class)
 abstract class ComicDatabase : RoomDatabase() {
     abstract fun comicDao(): ComicDao
 }
